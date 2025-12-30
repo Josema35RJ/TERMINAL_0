@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIVEL -1 | SITIO OFICIAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. CONFIGURACIÓN BASE & VARIABLES --- */
+        :root {
+            --c-dark: #050505;
+            --c-concrete: #222;
+            --c-yellow: #ffb700; /* Amarillo Parking */
+            --c-red: #ff3333;
+            --c-neon: #ccffcc;
+            
+            --f-title: 'Anton', sans-serif;
+            --f-body: 'Courier Prime', monospace;
+            --f-ui: 'Montserrat', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--c-dark);
+            color: #ddd;
+            font-family: var(--f-body);
+            overflow-x: hidden;
+            perspective: 1px;
+        }
+
+        /* --- 2. CAPAS ATMOSFÉRICAS (REALISMO) --- */
+        
+        /* Ruido de película (Grano) */
+        .fx-grain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* Viñeta de suciedad en los bordes */
+        .fx-vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 998;
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%);
+        }
+
+        /* Niebla baja (Animada) */
+        .fx-fog {
+            position: fixed; bottom: 0; left: 0; width: 200%; height: 50vh;
+            background: linear-gradient(to top, rgba(20,20,20,0.8), transparent);
+            z-index: 10; pointer-events: none;
+            animation: fog-move 20s linear infinite;
+        }
+
+        /* --- 3. UI DE NAVEGACIÓN --- */
+        nav {
+            position: fixed; top: 0; right: 0; height: 100vh; width: 60px;
+            background: #111; border-left: 1px solid #333;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 20px; z-index: 1000;
+        }
+        .nav-dot {
+            width: 10px; height: 10px; background: #444; border-radius: 50%;
+            transition: 0.3s; position: relative;
+        }
+        .nav-dot:hover, .nav-dot.active { background: var(--c-yellow); box-shadow: 0 0 10px var(--c-yellow); transform: scale(1.5); }
+        .nav-dot::after {
+            content: attr(data-floor); position: absolute; right: 20px; top: -5px;
+            color: var(--c-yellow); font-family: var(--f-ui); font-size: 0.7rem;
+            opacity: 0; transition: 0.3s; width: 100px; text-align: right;
+        }
+        .nav-dot:hover::after { opacity: 1; right: 25px; }
+
+        /* --- 4. SECCIONES PRINCIPALES --- */
+        section {
+            min-height: 100vh;
+            padding: 80px 100px; /* Margen grande */
+            position: relative;
+            border-bottom: 2px dashed #222;
+        }
+
+        /* HERO SECTION */
+        #floor-0 {
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            background: 
+                linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 100%),
+                url("https://images.unsplash.com/photo-1597838520779-c5c77749025e?q=80&w=2070&auto=format&fit=crop");
+            background-size: cover; background-position: center;
+            background-attachment: fixed; /* Parallax simple */
+        }
+        
+        h1 {
+            font-family: var(--f-title); font-size: 8rem; line-height: 0.9;
+            text-transform: uppercase; letter-spacing: -2px;
+            color: #fff; mix-blend-mode: overlay;
+        }
+        .subtitle {
+            font-size: 1.5rem; background: var(--c-yellow); color: #000;
+            padding: 5px 20px; font-weight: bold; transform: skewX(-10deg);
+            margin-bottom: 40px; display: inline-block;
+        }
+
+        /* CARACTERÍSTICAS (GRID INDUSTRIAL) */
+        #floor-1 { background: #0e0e0e; }
+        .grid-layout {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; margin-top: 50px;
+        }
+        .feature-box {
+            border: 1px solid #333; padding: 40px; background: #050505;
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .feature-box:hover { border-color: var(--c-yellow); transform: translateY(-10px); }
+        .feature-box::before {
+            content: ''; position: absolute; top:0; left:0; width: 4px; height: 100%;
+            background: var(--c-yellow); transform: scaleY(0); transition: 0.3s;
+        }
+        .feature-box:hover::before { transform: scaleY(1); }
+        
+        .icon-large { font-size: 4rem; color: #333; margin-bottom: 20px; transition: 0.3s; }
+        .feature-box:hover .icon-large { color: #fff; }
+
+        /* CCTV SYSTEM (INTERACTIVO) */
+        #floor-2 { background: #080808; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .cctv-container {
+            width: 800px; height: 500px; background: #000;
+            border: 20px solid #222; border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); position: relative; overflow: hidden;
+        }
+        .cctv-screen {
+            width: 100%; height: 100%; background: #051105;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--f-ui); color: var(--c-neon); text-transform: uppercase;
+            position: relative;
+        }
+        .cctv-overlay {
+            position: absolute; top: 20px; left: 20px; font-size: 0.8rem; z-index: 20;
+        }
+        .rec-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        
+        /* Botones de cámara */
+        .cam-controls { display: flex; gap: 10px; margin-top: 20px; }
+        .cam-btn {
+            background: #222; border: 1px solid #444; color: #888; padding: 10px 20px;
+            font-family: var(--f-ui); cursor: pointer; transition: 0.2s;
+        }
+        .cam-btn:hover, .cam-btn.active { background: var(--c-red); color: #fff; }
+
+        /* LORE (ARCHIVOS) */
+        #floor-3 {
+            background-color: #111;
+            background-image: radial-gradient(#222 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .file-folder {
+            background: #fdfdbd; color: #000; padding: 50px;
+            max-width: 700px; margin: 0 auto;
+            transform: rotate(-1deg); box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .paperclip {
+            position: absolute; top: -15px; left: 50%; width: 50px; height: 100px;
+            border: 5px solid #888; border-radius: 20px; z-index: 5;
+        }
+
+        /* FOOTER (EL FINAL) */
+        #floor-4 {
+            background: #000; color: #555; text-align: center;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        
+        /* --- 5. ELEMENTOS INTERACTIVOS --- */
+        
+        /* Teléfono Rojo */
+        .phone-booth {
+            position: fixed; bottom: 30px; left: 30px;
+            width: 60px; height: 60px; background: var(--c-red);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; box-shadow: 0 0 20px var(--c-red);
+            animation: ring 0.5s infinite; cursor: pointer; z-index: 2000;
+        }
+        
+        /* Modal de Sustos */
+        .jumpscare-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .face { font-size: 10rem; animation: shake 0.1s infinite; }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fog-move { 0% { background-position: 0 0; } 100% { background-position: 1000px 0; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes ring { 0% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } 100% { transform: rotate(0); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 100% { transform: translate(-1px, -1px); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="fx-grain"></div>
+    <div class="fx-vignette"></div>
+    <div class="fx-fog"></div>
+    <div class="jumpscare-overlay" id="jumpscare"><div class="face">👁️</div></div>
+
+    <div class="phone-booth" id="phone" onclick="answerPhone()">📞</div>
+
+    <nav>
+        <div class="nav-dot active" data-floor="ENTRADA" onclick="scrollToId('floor-0')"></div>
+        <div class="nav-dot" data-floor="CARACTERÍSTICAS" onclick="scrollToId('floor-1')"></div>
+        <div class="nav-dot" data-floor="CÁMARAS" onclick="scrollToId('floor-2')"></div>
+        <div class="nav-dot" data-floor="ARCHIVOS" onclick="scrollToId('floor-3')"></div>
+        <div class="nav-dot" data-floor="SÓTANO" onclick="scrollToId('floor-4')"></div>
+    </nav>
+
+    <section id="floor-0">
+        <h1 id="main-title">NIVEL <span style="color:var(--c-red)">-1</span></h1>
+        <div class="subtitle">ZONA DE ESTACIONAMIENTO INDEFINIDO</div>
+        
+        <p style="max-width: 600px; font-size: 1.2rem; margin-bottom: 40px; background: rgba(0,0,0,0.7); padding: 20px; border-left: 4px solid var(--c-yellow);">
+            Tu coche no está donde lo dejaste. Las columnas se mueven cuando no miras.
+            Bienvenido al simulador de terror liminal más realista.
+        </p>
+
+        <a href="#" style="background: var(--c-yellow); color: #000; padding: 20px 50px; font-family: var(--f-ui); font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">
+            Descargar Demo
+        </a>
+    </section>
+
+    <section id="floor-1">
+        <h2 style="font-family: var(--f-ui); font-size: 3rem; color: #fff; border-bottom: 2px solid #333; padding-bottom: 20px;">
+            PROTOCOLOS DE <span style="color: var(--c-yellow)">SEGURIDAD</span>
+        </h2>
+
+        <div class="grid-layout">
+            <div class="feature-box">
+                <div class="icon-large">🏃</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">IA DE PERSECUCIÓN</h3>
+                <p style="color: #888;">El "Empleado" aprende tus rutas. Si te escondes siempre en el mismo sitio, él estará esperándote allí la próxima vez.</p>
+            </div>
+            
+            <div class="feature-box">
+                <div class="icon-large">🎙️</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">DETECCIÓN DE MICRÓFONO</h3>
+                <p style="color: #888;">No respires fuerte. El juego usa tu micrófono para alertar a las entidades si gritas o hablas.</p>
+            </div>
+
+            <div class="feature-box">
+                <div class="icon-large">🧩</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">GEOMETRÍA IMPOSIBLE</h3>
+                <p style="color: #888;">Pasillos que se alargan. Puertas que llevan al techo. Un motor gráfico diseñado para romper la lógica.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="floor-2">
+        <h2 style="font-family: var(--f-ui); margin-bottom: 30px; color: #555;">SISTEMA DE VIGILANCIA</h2>
+        
+        <div class="cctv-container">
+            <div class="cctv-overlay">
+                <div class="rec-dot"></div> REC <br>
+                CAM: <span id="cam-id">01 - PASILLO NORTE</span>
+            </div>
+            
+            <div class="cctv-screen" id="screen-display">
+                <span style="opacity: 0.5;">NO HAY SEÑAL</span>
+            </div>
+            
+            <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif'); opacity: 0.05; pointer-events: none; background-size: cover;"></div>
+        </div>
+
+        <div class="cam-controls">
+            <button class="cam-btn active" onclick="changeCam(1, this)">CAM 01</button>
+            <button class="cam-btn" onclick="changeCam(2, this)">CAM 02</button>
+            <button class="cam-btn" onclick="changeCam(3, this)">CAM 03</button>
+            <button class="cam-btn" style="color: var(--c-red);" onclick="changeCam(666, this)">CAM 666</button>
+        </div>
+    </section>
+
+    <section id="floor-3">
+        <div class="file-folder">
+            <div class="paperclip"></div>
+            <h2 style="color: var(--c-red); font-family: 'Courier New'; text-decoration: underline;">INCIDENTE #4092</h2>
+            <p style="margin-top: 20px; line-height: 1.8;">
+                <strong>Sujeto:</strong> Hombre, 34 años.<br>
+                <strong>Hora de entrada:</strong> 22:45 PM<br>
+                <strong>Hora de salida:</strong> [DATO CORRUPTO]<br><br>
+                El vehículo del sujeto fue encontrado en la planta 2. El motor estaba en marcha. En el asiento del copiloto había un ticket de parking con fecha del año 1985.
+                <br><br>
+                <span style="background: black; color: white; padding: 2px;">NOTA: Las cámaras muestran al sujeto hablando con una columna durante 4 horas.</span>
+            </p>
+        </div>
+    </section>
+
+    <section id="floor-4">
+        <p style="font-size: 2rem; color: #333;">NO HAY SALIDA</p>
+        <p style="font-size: 5rem; color: #111;">⬇</p>
+        
+        <div style="margin-top: 100px; border-top: 1px solid #222; padding-top: 50px; width: 100%; display: flex; justify-content: space-around; text-align: left;">
+            <div>
+                <h4 style="color: var(--c-yellow);">ENLACES</h4>
+                <ul style="list-style: none; margin-top: 10px; color: #666;">
+                    <li>Steam</li>
+                    <li>Press Kit</li>
+                    <li>Soporte (No responde)</li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="color: var(--c-yellow);">REQUISITOS</h4>
+                <p style="color: #666; font-size: 0.8rem; margin-top: 10px;">
+                    OS: Windows 10<br>
+                    GPU: NVIDIA GTX 1060<br>
+                    SANITY: 80% Min.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- NAVEGACIÓN SUAVE ---
+        function scrollToId(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- SISTEMA CCTV ---
+        function changeCam(camNum, btn) {
+            // Reset botones
+            document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const screen = document.getElementById('screen-display');
+            const label = document.getElementById('cam-id');
+            
+            // Efecto de estática al cambiar
+            screen.style.backgroundColor = "#fff";
+            setTimeout(() => { screen.style.backgroundColor = "#051105"; }, 50);
+
+            if(camNum === 1) {
+                label.innerText = "01 - PASILLO NORTE";
+                screen.innerHTML = "<span style='opacity:0.5'>IMAGEN ESTÁTICA...</span>";
+                screen.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596627623912-7a2a60e4088e?w=800')";
+                screen.style.backgroundSize = "cover";
+            } else if(camNum === 2) {
+                label.innerText = "02 - ESCALERAS";
+                screen.innerText = "";
+                screen.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1518134261747-d3d63b015197?w=800')";
+                screen.style.backgroundSize = "cover";
+            } else if(camNum === 3) {
+                label.innerText = "03 - SÓTANO";
+                screen.innerHTML = "<span style='color:red; font-size: 2rem;'>SEÑAL PERDIDA</span>";
+                screen.style.backgroundImage = "none";
+            } else {
+                // EASTER EGG
+                label.innerText = "666 - [ERROR]";
+                screen.innerHTML = "<span style='font-size:5rem'>👁️</span>";
+                setTimeout(() => alert("TE HE VISTO."), 500);
+            }
+        }
+
+        // --- TELÉFONO ROJO ---
+        let audioCtx;
+        function answerPhone() {
+            const phone = document.getElementById('phone');
+            phone.style.animation = "none"; // Dejar de vibrar
+            phone.innerText = "🔇";
+            
+            // Audio Web API para sonido de teléfono descolgado
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            osc.frequency.value = 400; // Tono de línea
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.1;
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            
+            setTimeout(() => {
+                osc.stop();
+                alert("VOZ DESCONOCIDA: '¿Por qué sigues bajando? No hay nada abajo.'");
+                phone.style.display = 'none'; // Desaparece
+            }, 2000);
+        }
+
+        // --- SCROLL OBSERVER (PARA ACTUALIZAR NAVEGACIÓN) ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const id = entry.target.id;
+                    document.querySelectorAll('.nav-dot').forEach(dot => {
+                        dot.classList.remove('active');
+                        // Lógica simple para mapear IDs a botones (se podría mejorar con data-targets)
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+        // --- SISTEMA DE CORDURA (ROTACIÓN LEVE AL SCROLL) ---
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            if(scrolled > 2000) {
+                document.body.style.transform = `rotate(${Math.sin(scrolled/1000) * 1}deg)`;
+                document.body.style.filter = `sepia(${Math.min((scrolled-2000)/2000, 0.5)})`;
+            }
+        });
+
+    </script>
+</body>
+</html>
